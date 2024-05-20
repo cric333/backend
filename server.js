@@ -12,6 +12,12 @@ const bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
 
+app.get("/",async (req, res)=>{
+  return res.status(200).json({
+    title:"Backend",
+    message:'Working Fine'
+  })})
+
 app.get([ '/api/data1','/api/data2', '/api/data3', '/api/data4', '/api/data5'], async (req, res) => {
   try {
     const storedData = fs.readFileSync(FILE_PATH, 'utf8');
