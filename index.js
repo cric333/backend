@@ -9,7 +9,6 @@ const fs = require('fs');
 app.use(cors());
 const bodyParser = require('body-parser');
 
-
 app.use(bodyParser.json());
 
 app.get("/",async (req, res)=>{
