@@ -1,24 +1,23 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
-const app = express();
 const fs = require('fs');
+const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
 const { ObjectId } = require('mongodb');
 
+const app = express();
 const PORT = process.env.PORT || 5000;
+const uri = 'mongodb+srv://cricketzone333:ddHcjyXiXfX57Vlr@cluster0.snxxpyl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 const URL = process.env.PORT || 5000;
 // Middleware to enable CORS
 app.use(cors());
-const bodyParser = require('body-parser');
+app.use(bodyParser.json());
 
 FILE_PATH='./data.json'
 
-const uri = 'mongodb+srv://cricketzone333:ddHcjyXiXfX57Vlr@cluster0.snxxpyl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 const client = new MongoClient(uri);
-
-let db;
 
 async function connectToDatabase() {
     try {
@@ -27,12 +26,11 @@ async function connectToDatabase() {
         db = client.db('data');
     } catch (error) {
         console.error('Error connecting to MongoDB Atlas:', error);
+        process.exit(1);
     }
 }
 
 connectToDatabase();
-
-app.use(bodyParser.json());
 
   app.get("/",async (req, res)=>{
     return res.status(200).json({
