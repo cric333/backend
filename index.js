@@ -137,12 +137,12 @@ connectToDatabase();
           if (!data._id) {
               data._id = new ObjectId();
           }
+          const filter = { _id: data._id }; // Define the filter to find the document
+          const update = { $set: data };    // Define the update operation to set the data
           const result = await collection.findOneAndUpdate(
-              { _id: data._id },
-              { $set: data },
-              { upsert: true }
+            filter, update
           );
-          return res.json({ message: 'Data stored/updated successfully', id: data._id });
+          return res.json({ message: 'Data stored/updated successfully' });
       } catch (error) {
           return res.status(500).json({ error: error.message });
       }
