@@ -16,14 +16,12 @@ app.use(bodyParser.json());
 
 FILE_PATH='./data.json'
 
-
 const client = new MongoClient(uri);
 
 async function connectToDatabase() {
     try {
         await client.connect();
         console.log('Connected to MongoDB Atlas');
-        db = client.db('data');
     } catch (error) {
         console.error('Error connecting to MongoDB Atlas:', error);
         process.exit(1);
@@ -42,6 +40,7 @@ connectToDatabase();
     try {
       // const storedData = fs.readFileSync(FILE_PATH, 'utf8');
       // const parsedData = JSON.parse(storedData);
+      const db = client.db('data');
       const collection = db.collection('main');
       const parsedData = await collection.findOne({});
       const userIds = {
@@ -84,6 +83,7 @@ connectToDatabase();
   app.get([ '/api/profile1','/api/profile2', '/api/profile3', '/api/profile4', '/api/profile5'], async (req, res) => {
     // const storedData = fs.readFileSync(FILE_PATH, 'utf8');
     // const parsedData = JSON.parse(storedData);
+    const db = client.db('data');
     const collection = db.collection('main');
     const parsedData = await collection.findOne({});
 
@@ -132,6 +132,7 @@ connectToDatabase();
           return res.status(400).json({ error: 'No data provided' });
       }
       try {
+          const db = client.db('data');
           const collection = db.collection('main');
           if (!data._id) {
               data._id = new ObjectId();
@@ -149,6 +150,7 @@ connectToDatabase();
 
   const retrieveData = async (req, res) => {
     try {
+        const db = client.db('data');
         const collection = db.collection('main');
         const responseData = await collection.findOne({});
         return res.json(responseData);
