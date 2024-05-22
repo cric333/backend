@@ -137,10 +137,18 @@ connectToDatabase();
           if (!data._id) {
               data._id = new ObjectId();
           }
-          const filter = { _id: data._id }; // Define the filter to find the document
-          const update = { $set: data };    // Define the update operation to set the data
+          const existingDocument = await collection.findOne({_id: data._id});
+          const mergedDocument = { ...existingDocument, ...data };
+          Object.keys(mergedDocument).forEach(key => {
+              if (!(key in data)) {
+                  delete mergedDocument[key];
+              }
+          });
+          await collection.replaceOne({_id: data._id}, mergedDocument);
+          const filter = { _id: data._id }; 
+          const update =  {$set:data}; 
           const result = await collection.findOneAndUpdate(
-            filter, update
+            filter, update, { returnOriginal: false }
           );
           return res.json({ message: 'Data stored/updated successfully' });
       } catch (error) {
