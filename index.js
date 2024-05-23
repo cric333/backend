@@ -36,21 +36,9 @@ connectToDatabase();
       message:'Working Fine'
     })})
 
-  app.get([ '/api/data1','/api/data2', '/api/data3', '/api/data4', '/api/data5'], async (req, res) => {
+  app.get('/api/data/:id', async (req, res) => {
     try {
-      // const storedData = fs.readFileSync(FILE_PATH, 'utf8');
-      // const parsedData = JSON.parse(storedData);
-      const db = client.db('data');
-      const collection = db.collection('main');
-      const parsedData = await collection.findOne({});
-      const userIds = {
-        '/api/data1': parsedData.id1,
-        '/api/data2': parsedData.id2,
-        '/api/data3': parsedData.id3,
-        '/api/data4': parsedData.id4,
-        '/api/data5': parsedData.id5
-      };
-      const userId = userIds[req.path];
+      const userId = req.params.id;
       if (!userId) {
         throw new Error('User ID not found for this route');
       }
@@ -71,7 +59,6 @@ connectToDatabase();
         'x-version-code': '301',
         'x-version-name': '5.81.4'
       };
-
       // Make request to the API
       const response = await axios.get(`https://prod.api.probo.in/api/v1/user/${userId}/tradedEvents?page=1&live_event=1`, { headers });
       res.json(response.data);
@@ -80,22 +67,9 @@ connectToDatabase();
     }
   });
 
-  app.get([ '/api/profile1','/api/profile2', '/api/profile3', '/api/profile4', '/api/profile5'], async (req, res) => {
-    // const storedData = fs.readFileSync(FILE_PATH, 'utf8');
-    // const parsedData = JSON.parse(storedData);
-    const db = client.db('data');
-    const collection = db.collection('main');
-    const parsedData = await collection.findOne({});
-
-    const profileIds = {
-      '/api/profile1': parsedData.id1,
-      '/api/profile2': parsedData.id2,
-      '/api/profile3': parsedData.id3,
-      '/api/profile4': parsedData.id4,
-      '/api/profile5': parsedData.id5
-    };
+  app.get('/api/profile/:id', async (req, res) => {
     try {
-      const profile = profileIds[req.path];
+      const profile = req.params.id;
       if (!profile) {
         throw new Error('User ID not found for this route');
       }
@@ -117,8 +91,6 @@ connectToDatabase();
         'x-version-code': '301',
         'x-version-name': '5.81.4'
       };
-  
-      // Make request to the API
       const response = await axios.get(`https://prod.api.probo.in/api/v2/user/${profile}/profile`, { headers });
       res.json(response.data);
     } catch (error) {
