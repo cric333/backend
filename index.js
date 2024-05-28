@@ -126,7 +126,7 @@ connectToDatabase();
     }
   });
 
-  app.post('/store', async (req, res) => {
+  app.post([ '/store1','/store2', '/store3'], async (req, res) => {
       const data = req.body;
       if (!data) {
           return res.status(400).json({ error: 'No data provided' });
@@ -134,22 +134,9 @@ connectToDatabase();
       try {
           const db = client.db('data');
           const collection = db.collection('main');
-          if (!data._id) {
-              data._id = new ObjectId();
-          }
-          const existingDocument = await collection.findOne({_id: data._id});
-          const mergedDocument = { ...existingDocument, ...data };
-          Object.keys(mergedDocument).forEach(key => {
-              if (!(key in data)) {
-                  delete mergedDocument[key];
-              }
-          });
-          await collection.replaceOne({_id: data._id}, mergedDocument);
-          const filter = { _id: data._id }; 
-          const update =  {$set:data}; 
-          const result = await collection.findOneAndUpdate(
-            filter, update, { returnOriginal: false }
-          );
+          const filter = { _id: new ObjectId(data._id) };
+          const { _id, ...updateData } = data;
+          const result = await collection.updateOne(filter, { $set: updateData });
           return res.json({ message: 'Data stored/updated successfully' });
       } catch (error) {
           return res.status(500).json({ error: error.message });
@@ -160,13 +147,33 @@ connectToDatabase();
     try {
         const db = client.db('data');
         const collection = db.collection('main');
-        const responseData = await collection.findOne({});
+        let Id;
+        switch(req.path) {
+            case '/retrieve1':
+                Id = '6656111a7a5d01ddd0a81ec8';
+                break;
+            case '/retrieve2':
+                Id = '665611607a5d01ddd0a81ecd';
+                break;
+            case '/retrieve3':
+                Id = '6656116a7a5d01ddd0a81ece';
+                break;
+            default:
+                return res.status(404).json({ error: 'Invalid route' });
+        }
+        const objectId = new ObjectId(Id);
+        const responseData = await collection.findOne({ _id: objectId });
+        if (!responseData) {
+            return res.status(404).json({ error: 'Data not found' });
+        }
         return res.json(responseData);
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
-  };
-  app.get('/retrieve',retrieveData), 
+};
+
+app.get(['/retrieve1', '/retrieve2', '/retrieve3'], retrieveData);
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
